@@ -1,35 +1,37 @@
-
-
-
 const baseUrl = "http://localhost:3000/persons";
 
+const handleResponse = (response) => {
+  if (!response.ok) {
+    return response.json().then((json) => {
+      throw new Error(json.error || `Server responded with status: ${response.status}`);
+    });
+  }
+  return response.json();
+};
+
 const getAll = () => {
-  const request = fetch(baseUrl).then((response) => {
-    return response.json();
-  });
-  return request;
+  return fetch(baseUrl).then(handleResponse);
 };
 
 const create = (newObject) => {
-  const request = fetch(baseUrl, {
+  return fetch(baseUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(newObject),
-  }).then((response) => {
-    return response.json();
-  });
-  return request;
+  }).then(handleResponse);
 };
 
 const personDelete = (id) => {
-  const request = fetch(`${baseUrl}/${id}`, {
+  return fetch(`${baseUrl}/${id}`, {
     method: "DELETE",
-  }).then((response) => {
-    return response.json();
+  })
+  .then(handleResponse)
+  .catch((error) => {
+    console.error('Error:', error);
+    throw error;
   });
-  return request;
 };
 
 const numberEdit = (id, newPhoneNumber, name) => {
@@ -37,16 +39,13 @@ const numberEdit = (id, newPhoneNumber, name) => {
     name: name,
     number: newPhoneNumber,
   };
-  const request = fetch(`${baseUrl}/${id}`, {
+  return fetch(`${baseUrl}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  }).then((response) => {
-    return response.json();
-  });
-  return request;
+  }).then(handleResponse);
 };
 
 export default {
